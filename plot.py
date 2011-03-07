@@ -1,6 +1,8 @@
 from pylab import *
 
+import numpy as np
 import csv
+import math
 
 
 
@@ -17,6 +19,36 @@ def csv_to_arrays(f):
 def plot_for(t, odom_signle, output):
     x,y = csv_to_arrays(odom_signle)
     plot (x, y,'.-', label='distance-signal' )
+
+    #L = 10n log(d) + c
+    #y = 10*n * log(x) + c
+    # m = 10*n
+    #y = Ap
+    #A = [[log(x) 1]]
+    #p = [[10*n], [c]]
+
+
+
+
+    xx = map(lambda x: math.log(float(x)), x)
+
+    #y = m * xx + c
+    #m = 10 * n
+    #xx = log(d)
+
+#    print "lens x,y %s,%s" % (str(len(xx)), str(len(y)))
+
+    A = np.vstack([xx, np.ones(len(x))]).T
+    print "A => "
+    print A
+
+    m, c = np.linalg.lstsq(A, y)[0]
+    print "m,c = %s, %s" % (m,c)
+
+#    print xx
+#    print "x,y %f,%f" % (len(x), len((m*xx+c)))
+    plt.plot(x, map(lambda x: m*float(x)+c, xx), 'r', label='Fitted line')
+
 
 
     xlabel('distance')
@@ -88,3 +120,7 @@ plot_for('Router 4 - Test 1', 'out/r4_odom_rssi.csv', "out/r4.png")
 #plt.plot(x, m*x + c, 'r', label='Fitted line')
 #plt.legend()
 #plt.show()
+
+
+
+

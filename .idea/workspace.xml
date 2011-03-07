@@ -72,7 +72,7 @@
       <file leaf-file-name="plot.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/plot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="0" selection-start="284" selection-end="284" vertical-scroll-proportion="0.2287695">
+            <state line="2" column="12" selection-start="28" selection-end="33" vertical-scroll-proportion="-0.10398614">
               <folding />
             </state>
           </provider>
@@ -321,7 +321,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1680" height="1024" extended-state="0" />
+    <frame x="27" y="22" width="1680" height="1024" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -384,6 +384,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///Applications/homebrew/Cellar/python/2.7.1/lib/python2.7/site-packages/matplotlib/axes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="233" column="0" selection-start="7891" selection-end="7891" vertical-scroll-proportion="0.33275563">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/prepare_plot_data.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="205" column="0" selection-start="6271" selection-end="6271" vertical-scroll-proportion="0.0">
@@ -393,7 +400,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/plot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="284" selection-end="284" vertical-scroll-proportion="0.2287695">
+        <state line="2" column="12" selection-start="28" selection-end="33" vertical-scroll-proportion="-0.10398614">
           <folding />
         </state>
       </provider>
