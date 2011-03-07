@@ -60,7 +60,8 @@ def avg_signal_strength(x,y):
     return result
 
 def scale_signal_strength(r_readings):
-    r_readings[4] = str(875*((-1*float(r_readings[4]))+0))
+#    r_readings[4] = str(875*((-1*float(r_readings[4]))+0))
+    r_readings[4] = str(1*((+1*float(r_readings[4]))+0))
     return r_readings
 
 def process_router(r_readings, file_name):
@@ -76,8 +77,10 @@ def process_router(r_readings, file_name):
         if(type(r_dict[key]) == types.StringType):
     #        print "%s: %f" % (key, float(r_dict[key]))
             spamWriter.writerow((key, float(r_dict[key])))
-        else:
-            print type(r_dict[key])
+#        else:
+#            print type(r_dict[key])
+
+    return r_dict
 
 
 def process_odom(odom_readings, file_name):
@@ -95,8 +98,35 @@ def process_odom(odom_readings, file_name):
         if(type(odom_dict[key]) == types.StringType):
     #        print "%s: %f" % (key, float(odom_dict[key]))
             spamWriter.writerow((key, float(odom_dict[key])))
+#        else:
+#            print type(odom_dict[key])
+
+    return odom_dict
+
+
+def process_odom_router(odom_dict, r_dict, file_name):
+    odom_rssi_dict = ({})
+
+    for k, v in odom_dict.iteritems():
+#        print "odom_rssi_dict = "
+#        print odom_rssi_dict
+        if(r_dict.has_key(k) and type(r_dict[k]) == types.StringType):
+#            print "v,k = %s,%s" % (v,k)
+            if(type(v) == types.StringType):
+                odom_rssi_dict[v] = r_dict[k]
+
+    spamWriter = csv.writer(open(out_dir+file_name, 'wb'), delimiter=' ')
+
+    for key in sorted(odom_rssi_dict.iterkeys()):
+        if(type(odom_rssi_dict[key]) == types.StringType):
+#            print "%s: %f" % (key, float(odom_rssi_dict[key]))
+            spamWriter.writerow((key, float(odom_rssi_dict[key])))
         else:
-            print type(odom_dict[key])
+            print type(odom_rssi_dict[key])
+
+#    return odom_rssi_dict
+
+
 #
 #def csv_to_arrays(f):
 #    x = []
@@ -139,16 +169,16 @@ Aaaand written sorted odomoter readings, approximated to the second.
 
 
 odom_readings = read_file_to_array(odom_file)
-process_odom(map(to_r1, odom_readings), 'r1_odom.csv')
+r1_odom_dict = process_odom(map(to_r1, odom_readings), 'r1_odom.csv')
 
 odom_readings = read_file_to_array(odom_file)
-process_odom(map(to_r2, odom_readings), 'r2_odom.csv')
+r2_odom_dict = process_odom(map(to_r2, odom_readings), 'r2_odom.csv')
 
 odom_readings = read_file_to_array(odom_file)
-process_odom(map(to_r3, odom_readings), 'r3_odom.csv')
+r3_odom_dict = process_odom(map(to_r3, odom_readings), 'r3_odom.csv')
 
 odom_readings = read_file_to_array(odom_file)
-process_odom(map(to_r4, odom_readings), 'r4_odom.csv')
+r4_odom_dict = process_odom(map(to_r4, odom_readings), 'r4_odom.csv')
 
 
 
@@ -163,11 +193,16 @@ print """
 OK now I loaded up the the file for router readings as well...
 """
 
-process_router(r1_readings, 'r1_rssi.csv')
-process_router(r2_readings, 'r2_rssi.csv')
-process_router(r3_readings, 'r3_rssi.csv')
-process_router(r4_readings, 'r4_rssi.csv')
+r1_rssi_dict = process_router(r1_readings, 'r1_rssi.csv')
+r2_rssi_dict = process_router(r2_readings, 'r2_rssi.csv')
+r3_rssi_dict = process_router(r3_readings, 'r3_rssi.csv')
+r4_rssi_dict = process_router(r4_readings, 'r4_rssi.csv')
 
+
+process_odom_router(r1_odom_dict, r1_rssi_dict, 'r1_odom_rssi.csv')
+process_odom_router(r2_odom_dict, r2_rssi_dict, 'r2_odom_rssi.csv')
+process_odom_router(r3_odom_dict, r3_rssi_dict, 'r3_odom_rssi.csv')
+process_odom_router(r4_odom_dict, r4_rssi_dict, 'r4_odom_rssi.csv')
 
 
 

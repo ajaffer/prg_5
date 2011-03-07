@@ -63,7 +63,7 @@
       <file leaf-file-name="prepare_plot_data.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/prepare_plot_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="62" selection-start="1439" selection-end="1439" vertical-scroll-proportion="0.0">
+            <state line="205" column="0" selection-start="6271" selection-end="6271" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -72,7 +72,7 @@
       <file leaf-file-name="plot.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/plot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="0" selection-start="1140" selection-end="1140" vertical-scroll-proportion="0.9168111">
+            <state line="17" column="0" selection-start="284" selection-end="284" vertical-scroll-proportion="0.2287695">
               <folding />
             </state>
           </provider>
@@ -386,14 +386,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/prepare_plot_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="62" selection-start="1439" selection-end="1439" vertical-scroll-proportion="0.0">
+        <state line="205" column="0" selection-start="6271" selection-end="6271" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="0" selection-start="1140" selection-end="1140" vertical-scroll-proportion="0.9168111">
+        <state line="17" column="0" selection-start="284" selection-end="284" vertical-scroll-proportion="0.2287695">
           <folding />
         </state>
       </provider>
