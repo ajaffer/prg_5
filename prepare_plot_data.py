@@ -1,6 +1,7 @@
 __author__ = 'Ahsen'
 import types
 import csv
+import math
 
 source_dir = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/experiments/20080204-T1/"
 out_dir = "out/"
@@ -58,7 +59,12 @@ def avg_signal_strength(x,y):
         print "value error, %s, %s" % (x,y)
     return result
 
+def scale_signal_strength(r_readings):
+    r_readings[4] = str(875*((-1*float(r_readings[4]))+0))
+    return r_readings
+
 def process_router(r_readings, file_name):
+    map(scale_signal_strength, r_readings)
     r_dict = to_dict(r_readings, ({}))
 
     for k, v in r_dict.iteritems():
@@ -91,15 +97,32 @@ def process_odom(odom_readings, file_name):
             spamWriter.writerow((key, float(odom_dict[key])))
         else:
             print type(odom_dict[key])
+#
+#def csv_to_arrays(f):
+#    x = []
+#    y = []
+#    spamReader = csv.reader(open(f, 'rb'), delimiter=' ', quotechar='|')
+#    for row in spamReader:
+#        x.append(row[0])
+#        y.append(row[1])
+#    return x,y
 
-def csv_to_arrays(f):
-    x = []
-    y = []
-    spamReader = csv.reader(open(f, 'rb'), delimiter=' ', quotechar='|')
-    for row in spamReader:
-        x.append(row[0])
-        y.append(row[1])
-    return x,y
+
+def to_r1(odom_reading):
+    odom_reading[3] = str(float(odom_reading[3])+3000)
+    return odom_reading
+
+def to_r2(odom_reading):
+    odom_reading[3] = str(75000 - float(odom_reading[3])+3000)
+    return odom_reading
+
+def to_r3(odom_reading):
+    odom_reading[3] = str(math.sqrt( (23000-float(odom_reading[3])+3000)**2 + ((17-5.5)*1000)**2))
+    return odom_reading
+
+def to_r4(odom_reading):
+    odom_reading[3] = str(math.sqrt( (47000-float(odom_reading[3])+3000)**2 + ((5.5)*1000)**2))
+    return odom_reading
 
 
 odom_readings = read_file_to_array(odom_file)
@@ -108,15 +131,25 @@ print """
 Alright, I loaded up the the file for odomter readings.
 """
 
-process_odom(odom_readings, 'odom_p.csv')
+process_odom(odom_readings, 'odom.csv')
 
 print """
 Aaaand written sorted odomoter readings, approximated to the second.
 """
 
-#x,y = csv_to_arrays('../odom_p.csv')
-#odom
-#for i in x:
+
+odom_readings = read_file_to_array(odom_file)
+process_odom(map(to_r1, odom_readings), 'r1_odom.csv')
+
+odom_readings = read_file_to_array(odom_file)
+process_odom(map(to_r2, odom_readings), 'r2_odom.csv')
+
+odom_readings = read_file_to_array(odom_file)
+process_odom(map(to_r3, odom_readings), 'r3_odom.csv')
+
+odom_readings = read_file_to_array(odom_file)
+process_odom(map(to_r4, odom_readings), 'r4_odom.csv')
+
 
 
 
@@ -130,10 +163,10 @@ print """
 OK now I loaded up the the file for router readings as well...
 """
 
-process_router(r1_readings, 'r1_p.csv')
-process_router(r2_readings, 'r2_p.csv')
-process_router(r3_readings, 'r3_p.csv')
-process_router(r4_readings, 'r4_p.csv')
+process_router(r1_readings, 'r1_rssi.csv')
+process_router(r2_readings, 'r2_rssi.csv')
+process_router(r3_readings, 'r3_rssi.csv')
+process_router(r4_readings, 'r4_rssi.csv')
 
 
 

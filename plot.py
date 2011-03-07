@@ -14,15 +14,41 @@ def csv_to_arrays(f):
     return x,y
 
 
+def plot_for(t, odom, signal, output):
+    x,y = csv_to_arrays(signal)
+    plot (x, y,'.-', label='signal-strength' )
+
+    x,y = csv_to_arrays(odom)
+    plot (x, y,'.-', label='odom' )
 
 
-x,y = csv_to_arrays('../r4_p.csv')
-#print x
-#print y
-plot (x, y,'.-', label='odom' )
-xlabel('time - seconds')
-ylabel('rtouer 4 - signal strength')
-title('Router 4 Signal Strenght Data')
-legend(('sample1'))
-#legend(('sample1','sample2'))
-savefig("r4.png",dpi=(640/8))
+    xlabel('time - seconds')
+    ylabel('signal strength / distance')
+    title(t)
+    legend(('Signal Strength', 'Distance to Router'))
+    savefig(output,dpi=(640/8))
+    cla()
+    clf()
+
+
+plot_for('Router 1 - Test 1', 'out/r1_odom.csv', 'out/r1_rssi.csv', "out/r1.png")
+plot_for('Router 2 - Test 1', 'out/r2_odom.csv', 'out/r2_rssi.csv', "out/r2.png")
+plot_for('Router 3 - Test 1', 'out/r3_odom.csv', 'out/r3_rssi.csv', "out/r3.png")
+plot_for('Router 4 - Test 1', 'out/r4_odom.csv', 'out/r4_rssi.csv', "out/r4.png")
+
+#plot_for('Router 4 - Test 1', 'out/odom.csv', '', "out/odom.png")
+
+
+signal = 'out/r1_rssi.csv'
+odom = 'out/r1_odom.csv'
+t,s = csv_to_arrays(signal)
+t,o = csv_to_arrays(odom)
+n = len(t)
+
+
+(ar,br)=polyfit(x,y,1)
+xr=polyval([ar,br],x)
+err=sqrt(sum((xr-y)**2)/n)
+
+title('Linear Regression')
+plot(x)
