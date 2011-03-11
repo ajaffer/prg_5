@@ -66,9 +66,12 @@ def read_file_to_array(f):
     arr = []
     inp = open(f, "r")
     for line in inp.readlines():
-        arr.append([])
-        for i in line.split():
-            arr[-1].append(i)
+        if(line.lstrip(" ").startswith("#") or line.lstrip(" ").startswith("inst#")):
+            print "ignoring header: %s" % line
+        else:
+            arr.append([])
+            for i in line.split():
+                arr[-1].append(i)
     return arr
 
 
@@ -160,19 +163,8 @@ convert_to_ARFF(router_stoppoint_rssi, REGRESSION_Y)
 
 #reduce(lambda x: math.avg(x[0]),arr)
 
-def to_dict(predicted, param_no):
-    actual_dict = ({})
-    for i in range(len(predicted)):
-        p = predicted[i]
 
-        if len(p) > 0:
-            actual_value = p[param_no]
-            if(actual_dict.has_key(actual_value)==False):
-                actual_dict[actual_value] = list()
-            actual_dict[actual_value].append(p)
-    return actual_dict
-
-def sum_a(x,y):
+def sum_class(x,y):
     if(type(x) == types.ListType and type(y) == types.ListType):
         return float(x[4] if x[3]=='+' else x[3])+float(y[4] if y[3]=='+' else y[3])
     if(type(x) == types.FloatType and type(y) == types.ListType):
@@ -182,13 +174,40 @@ def sum_a(x,y):
 
     return float(-1)
 
+def sum_reg(x,y):
+    if(type(x) == types.ListType and type(y) == types.ListType):
+        return float(x[2])+float(y[2])
+    if(type(x) == types.FloatType and type(y) == types.ListType and len(y)>0):
+        return x + float(y[2])
+    if(type(x) == types.FloatType):
+        return float(x)
 
-def convert_to_actual_predicted_array(actual_dict):
+    return float(-1)
+
+
+def to_dict2(predicted, dict, index):
+    for i in range(len(predicted)):
+        p = predicted[i]
+
+        if len(p) > 0:
+            key = str(p[index])
+            if(type(key) == types.StringType):
+                if dict.has_key(key)==False:
+                    dict[key] = list()
+                dict[key].append(p)
+            else:
+                print "ignored value %s, predicted %s" %(value,predicted)
+    return dict
+
+
+def convert_to_actual_predicted_array(actual_dict, sum_func):
     for actual,predicted_arr in actual_dict.iteritems():
-        predicted_dict = to_dict(predicted_arr, 2)
+#        print "actual, predicted_arr = %s, %s" % (actual, predicted_arr)
+        predicted_dict = ({})
+        predicted_dict = to_dict2(predicted_arr, predicted_dict, 2)
 
         for predicted,v in predicted_dict.iteritems():
-            sum_of = reduce(sum_a ,v)
+            sum_of = reduce(sum_func ,v)
             if(type(sum_of) == types.FloatType):
                 value = str(sum_of/len(v))
 #                print "value = %s " % value
@@ -206,12 +225,16 @@ def convert_to_actual_predicted_array(actual_dict):
     return actual_dict
 
 
-def plot_dict(dict, output):
-    plot (range(len(dict.keys())), dict.keys(),'.-', label='distance-signal' )
-    plot (range(len(dict.values())), dict.values(),'.-', label='distance-signal' )
+def plot_dict(dict, output, label_y):
 
-    xlabel('')
-    ylabel('Locations')
+    original = sorted(dict.keys())
+    predicted = map(lambda x: dict[x], original)
+
+    plot (range(len(dict.keys())), original,'.-', label='distance-signal' )
+    plot (range(len(dict.values())), predicted,'.-', label='distance-signal' )
+
+    xlabel('Time')
+    ylabel(label_y)
     title("test")
     legend(('Atcual', 'Predicted'))
     savefig(output,dpi=(640/8))
@@ -219,23 +242,231 @@ def plot_dict(dict, output):
     clf()
 
 
-predicted_file = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plot/predicted.txt"
-predicted = read_file_to_array(predicted_file)
+def get_predictions():
+    file_arrays = []
+    for i in range(15):
+        file_name = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plots/class-plot/predictions/pos%s.text" % str(i+1)
+#        print "reading file: %s" %file_name
+        file_array = read_file_to_array(file_name)
+#        print file_array
+        if len(file_array)>0:
+            file_arrays.insert(i, file_array)
+#            file_arrays.append([])
+        else:
+            print "file was empty: % " % file_name
+
+    print "read %i many files" %len(file_arrays)
+    return file_arrays
+
+def get_regx_predictions():
+    file_arrays = []
+    for k,v in start_end_dict.iteritems():
+        file_name = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plots/reg-plot/regx/predictions/predicted_%s.txt" %v[2]
+#        print "reading file: %s" %file_name
+        file_array = read_file_to_array(file_name)
+#        print file_array
+        if len(file_array)>0:
+            file_arrays.insert(k, file_array)
+#            file_arrays.append([])
+        else:
+            print "file was empty: % " % file_name
+
+    print "read %i many files" %len(file_arrays)
+    return file_arrays
+
+def get_regy_predictions():
+    file_arrays = []
+    for k,v in start_end_dict.iteritems():
+        file_name = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plots/reg-plot/regy/predictions/predicted_%s.txt" %v[3]
+#        print "reading file: %s" %file_name
+        file_array = read_file_to_array(file_name)
+#        print file_array
+        if len(file_array)>0:
+            file_arrays.insert(k, file_array)
+#            file_arrays.append([])
+        else:
+            print "file was empty: % " % file_name
+
+    print "read %i many files" %len(file_arrays)
+    return file_arrays
+
+
+
+def to_dict(predicted, dict, value):
+    for i in range(len(predicted)):
+        p = predicted[i]
+
+        if len(p) > 0:
+
+            if(type(value) == types.StringType):
+                dict[str(value)].append(p)
+#            else:
+#                print "ignored value %s, predicted %s" %(value,predicted)
+    return dict
+
+
+def read_predictions_to_dict(file_arrays):
+    actual_dict = ({})
+    for i in range(len(file_arrays)):
+#        print "when i is %i, file array is " %i
+#        print file_arrays[i]
+
+        actual_dict[str(i+1)] = list()
+        actual_dict = to_dict(file_arrays[i], actual_dict, str(i+1))
+
+#        predicted = file_arrays[i]
+#        value = str(i+1)
+#        for i in range(len(predicted)):
+#            p = predicted[i]
+#
+#            if len(p) > 0:
+#
+#                if(type(value) == types.StringType):
+#                    actual_dict[str(value)].append(p)
+
+
+#        print "actual_dict = %s" % actual_dict
+
+    return actual_dict
+
+
+
+
+def read_regx_predictions_to_dict(file_arrays):
+    actual_dict = ({})
+    for i in range(len(file_arrays)):
+#        print "when i is %i, file array is " %i
+#        print file_arrays[i]
+
+#        actual_dict[start_end_dict[i][2]] = list()
+#        print "start_end_dict[i][2] is %s" %start_end_dict[i][2]
+#        actual_dict = to_dict(file_arrays[i], actual_dict, start_end_dict[i][2])
+        actual_dict[start_end_dict[i][2]] = str(float(reduce(sum_reg,file_arrays[i]))/len(file_arrays[i]))
+
+
+
+
+#        predicted = file_arrays[i]
+#        value = str(i+1)
+#        for i in range(len(predicted)):
+#            p = predicted[i]
+#
+#            if len(p) > 0:
+#
+#                if(type(value) == types.StringType):
+#                    actual_dict[str(value)].append(p)
+
+
+#        print "actual_dict = %s" % actual_dict
+
+    return actual_dict
+
+def read_regy_predictions_to_dict(file_arrays):
+    actual_dict = ({})
+    for i in range(len(file_arrays)):
+#        print "when i is %i, file array is " %i
+#        print file_arrays[i]
+
+#        actual_dict[start_end_dict[i][2]] = list()
+#        print "start_end_dict[i][2] is %s" %start_end_dict[i][2]
+#        actual_dict = to_dict(file_arrays[i], actual_dict, start_end_dict[i][2])
+        actual_dict[start_end_dict[i][3]] = str(float(reduce(sum_reg,file_arrays[i]))/len(file_arrays[i]))
+
+
+
+
+#        predicted = file_arrays[i]
+#        value = str(i+1)
+#        for i in range(len(predicted)):
+#            p = predicted[i]
+#
+#            if len(p) > 0:
+#
+#                if(type(value) == types.StringType):
+#                    actual_dict[str(value)].append(p)
+
+
+#        print "actual_dict = %s" % actual_dict
+
+    return actual_dict
+
+
+
+
+def print_array_of_files(file_arrays):
+    for i in range(len(file_arrays)):
+        print "predictions for index test %i are %s " % (i+1, file_arrays[i])
+
+#predicted_file = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plots/class-plot/predicted.txt"
+#predicted = read_file_to_array(predicted_file)
+
+
+file_arrays = get_predictions()
+#print_array_of_files(file_arrays)
+#print array_of_files(file_arrays)
 
 #print predicted
 
-actual_dict = to_dict(predicted, 1)
+
+actual_dict = read_predictions_to_dict(file_arrays)
+
+#print "actual_dict= %s" %actual_dict
+
+
+actual_dict = convert_to_actual_predicted_array(actual_dict, sum_class)
 
 #print actual_dict
 
+d = ({})
+for k,v in actual_dict.iteritems():
+    d[int(k.partition(":")[0])] = int(v.partition(":")[0])
 
-actual_dict = convert_to_actual_predicted_array(actual_dict)
+#print d
+plot_dir = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plots/class-plot/"
+plot_dict(d, plot_dir+"plot.png", 'Locations')
 
-print actual_dict
+
+
+file_arrays_regx = get_regx_predictions()
+#print_array_of_files(file_arrays_regx)
+
+actual_dict=({})
+actual_dict = read_regx_predictions_to_dict(file_arrays_regx)
+#print actual_dict
+
+#actual_dict = convert_to_actual_predicted_array(actual_dict, sum_reg)
+#print actual_dict
+
 
 d = ({})
 for k,v in actual_dict.iteritems():
-    d[k.partition(":")[0]] = v.partition(":")[0]
+    d[float(k)] = float(v)
 
-print d
-plot_dict(d, out_dir+"plot.png")
+
+plot_dir = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plots/reg-plot/regx/"
+plot_dict(d, plot_dir+"plot.png", 'Distance')
+
+
+
+
+
+file_arrays_regy = get_regy_predictions()
+#print_array_of_files(file_arrays_regy)
+
+actual_dict=({})
+actual_dict = read_regy_predictions_to_dict(file_arrays_regy)
+print actual_dict
+
+#actual_dict = convert_to_actual_predicted_array(actual_dict, sum_reg)
+#print actual_dict
+
+
+d = ({})
+for k,v in actual_dict.iteritems():
+    d[float(k)] = float(v)
+
+
+#print d
+
+plot_dir = "/Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plots/reg-plot/regy/"
+plot_dict(d, plot_dir+"plot.png", 'Distance')
