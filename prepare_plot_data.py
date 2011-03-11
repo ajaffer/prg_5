@@ -124,7 +124,16 @@ def process_odom_router(odom_dict, r_dict, file_name):
         else:
             print type(odom_rssi_dict[key])
 
-#    return odom_rssi_dict
+    return odom_rssi_dict
+
+def write_time_odom_rssi_csv(odom_dict, r_dict, file_name):
+
+    spamWriter = csv.writer(open(out_dir+file_name, 'wb'), delimiter=' ')
+
+    for time, odom in odom_dict.iteritems():
+        if(r_dict.has_key(time) and type(r_dict[time]) == types.StringType and type(odom) == types.StringType):
+            spamWriter.writerow((time, odom, r_dict[time]))
+
 
 
 #
@@ -161,7 +170,7 @@ print """
 Alright, I loaded up the the file for odomter readings.
 """
 
-process_odom(odom_readings, 'odom.csv')
+odom_dict = process_odom(odom_readings, 'odom.csv')
 
 print """
 Aaaand written sorted odomoter readings, approximated to the second.
@@ -199,10 +208,17 @@ r3_rssi_dict = process_router(r3_readings, 'r3_rssi.csv')
 r4_rssi_dict = process_router(r4_readings, 'r4_rssi.csv')
 
 
-process_odom_router(r1_odom_dict, r1_rssi_dict, 'r1_odom_rssi.csv')
-process_odom_router(r2_odom_dict, r2_rssi_dict, 'r2_odom_rssi.csv')
-process_odom_router(r3_odom_dict, r3_rssi_dict, 'r3_odom_rssi.csv')
-process_odom_router(r4_odom_dict, r4_rssi_dict, 'r4_odom_rssi.csv')
+r1_odom_rssi_dict = process_odom_router(r1_odom_dict, r1_rssi_dict, 'r1_odom_rssi.csv')
+r2_odom_rssi_dict = process_odom_router(r2_odom_dict, r2_rssi_dict, 'r2_odom_rssi.csv')
+r3_odom_rssi_dict = process_odom_router(r3_odom_dict, r3_rssi_dict, 'r3_odom_rssi.csv')
+r4_odom_rssi_dict = process_odom_router(r4_odom_dict, r4_rssi_dict, 'r4_odom_rssi.csv')
+
+
+
+write_time_odom_rssi_csv(odom_dict, r1_rssi_dict, 'r1_time_odom_rssi.csv')
+write_time_odom_rssi_csv(odom_dict, r2_rssi_dict, 'r2_time_odom_rssi.csv')
+write_time_odom_rssi_csv(odom_dict, r3_rssi_dict, 'r3_time_odom_rssi.csv')
+write_time_odom_rssi_csv(odom_dict, r4_rssi_dict, 'r4_time_odom_rssi.csv')
 
 
 

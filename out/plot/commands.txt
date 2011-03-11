@@ -1,0 +1,4 @@
+java weka.classifiers.functions.MultilayerPerceptron -L 0.3 -M 0.2 -N 500 -V 0 -S 0 -E 20 -H a -t /Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plot/rssi_1.arff -d /Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plot/rssi.model
+
+
+java weka.classifiers.functions.MultilayerPerceptron -p 5 -l /Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plot/rssi.model -T /Users/Ahsen/Documents/workdir/drexel/CS-610/programming_hw5/code/out/plot/rssi_1.arff
